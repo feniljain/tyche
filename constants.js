@@ -1,0 +1,6 @@
+const COMPLETED = "COMPLETED";
+const RETRY = "RETRY";
+const FAILED = "FAILED";
+const CONCURRENCY_FACTOR = 10;
+
+module.exports = { COMPLETED, RETRY, FAILED, CONCURRENCY_FACTOR };
