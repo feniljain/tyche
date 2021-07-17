@@ -35,7 +35,7 @@ module.exports = {
                     password: hashedPassword,
                 });
                 auth.save(function(_err, res) {
-                    console.log(res._id);
+                    // console.log(res._id);
                 });
                 return Promise.resolve({ "status": "Ok" });
             },

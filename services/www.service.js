@@ -269,5 +269,5 @@ module.exports = {
                 this.logger.info("WWW server stopped!");
             });
         }
-    }
+    },
 };

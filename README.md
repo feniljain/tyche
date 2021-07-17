@@ -25,7 +25,7 @@ npm start
 ## Architecture
 
 <p align="center">
-		<img src="./static/Architecture.jpg" width=350px />
+		<img src="./static/Architecture.jpg" width=1200px />
 </p>
 
 ## :wrench: Development locally

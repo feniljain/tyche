@@ -30,6 +30,7 @@ module.exports = {
                 const user = new User({
                     email: ctx.params.user.email,
                     name: ctx.params.user.name,
+                    isAdmin: false,
                 });
                 return user.save();
             },

@@ -21,6 +21,10 @@ let UserSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "auths",
     },
+    isAdmin: {
+        type: Boolean,
+        "default": false,
+    }
 }, {
 	timestamps: true
 });
