@@ -1,12 +1,10 @@
 "use strict";
 
-const _ = require("lodash");
 const DbService = require("moleculer-db");
 const MongooseAdapter = require("moleculer-db-adapter-mongoose");
 const Auth = require("../models/auth.model");
 const CacheCleaner = require("../mixins/cache.cleaner.mixin");
-const Fakerator = require("fakerator");
-const fake = new Fakerator();
+const bcrypt = require('bcrypt');
 
 module.exports = {
     name: "auth",
@@ -17,11 +15,12 @@ module.exports = {
     model: Auth,
 
     settings: {
-        fields: ["userId", "password"],
+        fields: ["userId", "password", "email"],
 
         entityValidator: {
             userId: { type: "string" },
             password: { type: "string" },
+            email: { type: "string" },
         },
     },
 
@@ -31,13 +30,11 @@ module.exports = {
                 auth: { type: "object" }
             },
             async handler(ctx) {
-                // let entity = ctx.params.auth;
-                // await this.validateEntity(entity);
-
-                //TODO: Add password hash functionality
+                const hashedPassword = bcrypt.hashSync(ctx.params.auth.password, 10);
                 const auth = new Auth({
+                    email: ctx.params.auth.email,
                     userId: ctx.params.auth.userId,
-                    password: ctx.params.auth.password,
+                    password: hashedPassword,
                 });
                 auth.save(function(_err, res) {
                     console.log(res._id);
@@ -45,6 +42,26 @@ module.exports = {
                 return Promise.resolve({ "status": "Ok" });
             },
         },
+
+        login: {
+            params: {
+                auth: { type: "object" },
+            },
+            async handler(ctx) {
+                try {
+                    const auth = await Auth.findOne({
+                        email: ctx.params.auth.email,
+                    });
+                    if (bcrypt.compareSync(ctx.params.auth.password, auth.password)) {
+                        return Promise.resolve(auth);
+                    } else {
+                        return Promise.reject({ "err": "email id or password is incorrect" });
+                    }
+                } catch (err) {
+                    return Promise.reject({ "err": "email id or password is incorrect" });
+                }
+            },
+        }
     },
 
     methods: {

@@ -17,6 +17,10 @@ let UserSchema = new Schema({
 		lowercase: true,
 		required: "Please fill in an email"
 	},
+    auth: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "auths",
+    },
 }, {
 	timestamps: true
 });

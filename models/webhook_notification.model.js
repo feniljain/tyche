@@ -9,16 +9,18 @@ let WebhookNotificationSchema = new Schema({
 		trim: true,
 		required: "Please fill in status"
 	},
-    webhookId: {
+    ipAddr: {
         type: String,
         trim: true,
-        unique: true,
-        required: "Please fill in webhook_id"
+    },
+    registeredWebhookId: {
+        type: String,
+        trim: true,
+        required: "Please fill in registered_webhook_id"
     },
     userId: {
         type: String,
         trim: true,
-        unique: true,
         required: "Please fill in user_id"
     },
     retryCount: {

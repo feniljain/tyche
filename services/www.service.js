@@ -36,6 +36,7 @@ module.exports = {
         initRoutes(app) {
             app.get("/health", this.health);
             app.post("/signup", this.signup);
+            app.post("/login", this.login);
             app.post("/webhook/register", this.registerWebhook);
             app.post("/webhook/create", this.createWebhook);
             app.get("/webhook/list", this.listWebhook);
@@ -58,14 +59,31 @@ module.exports = {
                     },
                 });
 
-                const _authData = await this.broker.call("auth.signup", {
+                await this.broker.call("auth.signup", {
                     "auth": {
                         "userId": user._id,
+                        "email": req.body.email,
                         "password": req.body.password,
                     },
                 });
 
                 res.send(user);
+            } catch (err) {
+                return this.handleErr(err);
+            }
+        },
+
+        async login(req, res) {
+            try {
+                const resp = await this.broker.call("auth.login", {
+                    "auth": {
+                        "email": req.body.email,
+                        "password": req.body.password,
+                    }
+                });
+                res.json({
+                    "status": "verified",
+                });
             } catch (err) {
                 return this.handleErr(err);
             }

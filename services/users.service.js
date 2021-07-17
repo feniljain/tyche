@@ -16,11 +16,11 @@ module.exports = {
     settings: {
         fields: ["name", "userId", "email"],
 
-        entityValidator: {
-            userId: { type: "string", optional:true },
-            name: { type: "string", optional:true },
-            email: { type: "string", optional:true },
-        },
+        // entityValidator: {
+        //     userId: { type: "string", optional:true },
+        //     name: { type: "string", optional:true },
+        //     email: { type: "string", optional:true },
+        // },
     },
 
     actions: {
@@ -29,28 +29,11 @@ module.exports = {
                 user: { type: "object" }
             },
             async handler(ctx) {
-                // let entity = ctx.params.auth;
-                // await this.validateEntity(entity);
-
                 const user = new User({
                     email: ctx.params.user.email,
                     name: ctx.params.user.name,
                 });
                 return user.save();
-            },
-        },
-
-        get: {
-            cache: true,
-            params: {
-                userId: { type: "string" }
-            },
-            async handler(ctx) {
-                if (ctx.params.userId == "" || ctx.params.userId == undefined) {
-                    return this.createClientError("User ID", 422, "userId");
-                }
-
-                return User.findOne({_id: userId});
             },
         },
     },
