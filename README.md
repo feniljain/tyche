@@ -40,7 +40,6 @@ npm run dev
 ### :office: Running as microservices
 _All services are running in separated containers, communicate via NATS & use Traefik reverse proxy._
 ```bash
-cd docker/micro
 docker-compose up -d --build
 ```
 
