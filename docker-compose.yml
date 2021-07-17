@@ -1,33 +1,6 @@
 version: "3.3"
 
 services:
-
-    # api:
-    #   build:
-    #     context: ../..
-    #   image: tyche
-    #   env_file: docker-compose.env
-    #   expose:
-    #     - "3000"
-    #   ports:
-    #     - "3000:3000"
-    #   environment:
-    #     SERVICES: api
-    #     PORT: 3000
-    #   links:
-    #     - mongo
-    #   depends_on:
-    #     - mongo
-    #     - nats
-    #     - redis
-    #     - rabbitmq
-    # networks:
-    #   - internal
-    # labels:
-    #   - "traefik.enable=true"
-    #   - "traefik.http.routers.api-gw.rule=PathPrefix(`/`)"
-    #   - "traefik.http.services.api-gw.loadbalancer.server.port=3000"
-
   api:
     build:
       context: .
@@ -36,16 +9,18 @@ services:
     environment:
       SERVICES: api
       PORT: 3000
-    ports:
-      - "3000:3000"
-    expose:
-      - "3000"
+    # ports:
+    #   - "3000:3000"
     depends_on:
       - nats
       - redis
       - rabbitmq
     networks:
       - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-gw.rule=PathPrefix(`/`)"
+      - "traefik.http.services.api-gw.loadbalancer.server.port=3000"
 
   auth:
     build:
@@ -62,6 +37,20 @@ services:
       - internal
 
   users:
+    build:
+      context: .
+    image: tyche
+    env_file: docker-compose.env
+    environment:
+      SERVICES: users
+    depends_on:
+      - mongo
+      - nats
+      - redis
+    networks:
+      - internal
+
+  webhooks:
     build:
       context: .
     image: tyche
@@ -102,20 +91,20 @@ services:
      networks:
        - internal
 
-  # traefik:
-  #   image: traefik:v2.1
-  #   command:
-  #     - "--api.insecure=true" # Don't do that in production!
-  #     - "--providers.docker=true"
-  #     - "--providers.docker.exposedbydefault=false"
-  #   ports:
-  #     - 3000:80
-  #     - 3001:8080
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #   networks:
-  #     - internal
-  #     - default
+  traefik:
+    image: traefik:v2.1
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+    ports:
+      - 3000:80
+      - 3001:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - internal
+      - default
 
 networks:
   internal:
