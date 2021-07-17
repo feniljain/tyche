@@ -21,6 +21,20 @@ cd tyche
 npm install
 npm start
 ```
+
+## Architecture
+
+<p align="center">
+		<img src="./static/Architecture.jpg" width=350px />
+</p>
+
+## :wrench: Development locally
+_Running MongoDB, Redis and RabbitMQ is required on localhost!_
+
+```bash
+npm run dev
+```
+
 ## :cloud: Start in Docker
 
 ### :office: Running as microservices
@@ -40,12 +54,6 @@ You can scale up the WWW service as well. Traefik is load balancing the requests
 ```bash
 # Scale up the WWW service to 2 instances
 docker-compose up -d --scale www=2
-```
-## :wrench: Development locally
-_Running MongoDB, Redis and RabbitMQ is required on localhost!_
-
-```bash
-npm run dev
 ```
 
 # License

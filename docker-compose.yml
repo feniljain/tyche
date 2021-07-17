@@ -36,6 +36,10 @@ services:
     environment:
       SERVICES: api
       PORT: 3000
+    ports:
+      - "3000:3000"
+    expose:
+      - "3000"
     depends_on:
       - nats
       - redis
