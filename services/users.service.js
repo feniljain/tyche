@@ -7,9 +7,7 @@ const CacheCleaner = require("../mixins/cache.cleaner.mixin");
 
 module.exports = {
     name: "users",
-    //TODO: Use CacheCleaner
-    // mixins: [DbService, CacheCleaner(["users", "posts"])],
-    mixins: [DbService],
+    mixins: [DbService, CacheCleaner(["users", "webhooks"])],
     adapter: new MongooseAdapter(process.env.MONGO_URI || "mongodb://localhost/tyche", { useNewUrlParser: true, useUnifiedTopology: true }),
     model: User,
 

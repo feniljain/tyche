@@ -19,9 +19,7 @@ const queueMixin = QueueMixin({
 
 module.exports = {
     name: "webhooks",
-    //TODO: Use CacheCleaner
-    mixins: [DbService, queueMixin],
-    // mixins: [DbService, CacheCleaner(["users"])],
+    mixins: [DbService, CacheCleaner(["users", "webhooks"])],
     adapter: new MongooseAdapter(process.env.MONGO_URI || "mongodb://localhost/tyche", { useNewUrlParser: true, useUnifiedTopology: true }),
     model: [Webhook, WebhookReg, WebhookNotif],
 

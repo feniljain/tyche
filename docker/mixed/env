@@ -1,5 +1,0 @@
-LOGLEVEL=info
-TRANSPORTER=nats://nats:4222
-CACHER=redis://redis
-MONGO_URI=mongodb://mongo/moleculer-blog
-SERVICEDIR=services

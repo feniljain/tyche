@@ -8,9 +8,7 @@ const bcrypt = require('bcrypt');
 
 module.exports = {
     name: "auth",
-    //TODO: Use CacheCleaner
-    // mixins: [DbService, CacheCleaner(["users", "posts"])],
-    mixins: [DbService],
+    mixins: [DbService, CacheCleaner(["users", "webhooks"])],
     adapter: new MongooseAdapter(process.env.MONGO_URI || "mongodb://localhost/tyche", { useNewUrlParser: true, useUnifiedTopology: true }),
     model: Auth,
 

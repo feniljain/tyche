@@ -1,12 +1,7 @@
 "use strict";
 
-const { MoleculerError } = require("moleculer").Errors;
+// const { MoleculerError } = require("moleculer").Errors;
 const path = require("path");
-/**
- * Define Express Req. and Res. Types
- * @typedef {import('express').Request} Request
- * @typedef {import('express').Response} Response
- */
 const express = require("express");
 const morgan = require("morgan");
 const _ = require("lodash");
@@ -31,7 +26,7 @@ module.exports = {
         pageSize: 5
     },
 
-    //TODO: Convert all responses to proper json responses
+    //TODO: Implement admin privileges
     methods: {
         initRoutes(app) {
             app.get("/health", this.health);
@@ -41,12 +36,16 @@ module.exports = {
             app.post("/webhook/create", this.createWebhook);
             app.get("/webhook/list", this.listWebhook);
             app.patch("/webhook/update", this.updateWebhook);
-            app.post("/webhook/trigger", this.triggerWebhook);
+            app.post("/webhook/ip", this.triggerWebhook);
         },
 
         async health(_, res) {
             res.json({
-                "status": "perfectly up and running",
+                "status": true,
+                "error": null,
+                "payload": {
+                    "message": "perfectly up and running",
+                },
             });
         },
 
@@ -67,7 +66,13 @@ module.exports = {
                     },
                 });
 
-                res.send(user);
+                res.status(201).json({
+                    "status": true,
+                    "error": null,
+                    "payload": {
+                        "user": user,
+                    },
+                });
             } catch (err) {
                 return this.handleErr(err);
             }
@@ -75,14 +80,18 @@ module.exports = {
 
         async login(req, res) {
             try {
-                const resp = await this.broker.call("auth.login", {
+                await this.broker.call("auth.login", {
                     "auth": {
                         "email": req.body.email,
                         "password": req.body.password,
                     }
                 });
-                res.json({
-                    "status": "verified",
+                res.status(200).json({
+                    "status": true,
+                    "error": null,
+                    "payload": {
+                        "message": "verified",
+                    },
                 });
             } catch (err) {
                 return this.handleErr(err);
@@ -97,7 +106,13 @@ module.exports = {
                         "slug": req.body.slug,
                     },
                 });
-                res.send(webhook);
+                res.status(201).json({
+                    "status": true,
+                    "error": null,
+                    "payload": {
+                        "webhook": webhook,
+                    },
+                });
             } catch (err) {
                 return this.handleErr(err);
             }
@@ -107,12 +122,18 @@ module.exports = {
             try {
                 const webhook = await this.broker.call("webhooks.register", {
                     "webhookReg": {
-                        "url": req.body.url,
+                        "url": req.body.targetUrl,
                         "webhookId": req.body.webhookId,
                         "userId": req.body.userId,
                     },
                 });
-                res.send(webhook);
+                res.status(201).json({
+                    "status": true,
+                    "error": null,
+                    "payload": {
+                        "webhook": webhook,
+                    },
+                });
             } catch (err) {
                 return this.handleErr(err);
             }
@@ -121,7 +142,13 @@ module.exports = {
         async listWebhook(_, res) {
             try {
                 const webhooks = await this.broker.call("webhooks.list");
-                res.send(webhooks);
+                res.status(200).json({
+                    "status": true,
+                    "error": null,
+                    "payload": {
+                        "webhooks": webhooks,
+                    },
+                });
             } catch (err) {
                 return this.handleErr(err);
             }
@@ -135,7 +162,13 @@ module.exports = {
                         "url": req.body.newTargetUrl,
                     },
                 });
-                res.send(webhook);
+                res.status(204).json({
+                    "status": true,
+                    "error": null,
+                    "payload": {
+                        "webhook": webhook,
+                    },
+                });
             } catch (err) {
                 return this.handleErr(err);
             }
@@ -146,8 +179,12 @@ module.exports = {
                 await this.broker.call("webhooks.trigger", {
                     "ipAddr": req.body.ipAddress,
                 });
-                resp.send({
-                    "status": "ok",
+                resp.status(200).json({
+                    "status": true,
+                    "error": null,
+                    "payload": {
+                        "message": "process initiated",
+                    },
                 });
             } catch (err) {
                 return this.handleErr(err);
@@ -158,7 +195,12 @@ module.exports = {
             return err => {
                 this.logger.error("Request error!", err);
 
-                res.status(err.code || 500).send(err.message);
+                res.status(err.code || 500).json({
+                    "status": false,
+                    "error": err.message,
+                    "payload": {
+                    },
+                });
             };
         }
     },
@@ -194,10 +236,6 @@ module.exports = {
         app.use(morgan("dev", {
             stream: lmStream
         }));
-
-        // Set view folder
-        app.set("views", path.join(baseFolder, "views"));
-        app.set("view engine", "pug");
 
         if (process.env.NODE_ENV == "production") {
             app.locals.cache = "memory";
